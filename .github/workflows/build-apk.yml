@@ -26,6 +26,31 @@ jobs:
           fi
           yes | "$SDKMANAGER" --licenses
           "$SDKMANAGER" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+      - name: Generate legacy-compatible PNG launcher icons
+        run: |
+          python3 -m pip install --quiet Pillow
+          mkdir -p app/src/main/res/mipmap-mdpi app/src/main/res/mipmap-hdpi app/src/main/res/mipmap-xhdpi app/src/main/res/mipmap-xxhdpi app/src/main/res/mipmap-xxxhdpi
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw
+          import os
+          sizes = {'mdpi':48, 'hdpi':72, 'xhdpi':96, 'xxhdpi':144, 'xxxhdpi':192}
+          for density, size in sizes.items():
+              im = Image.new('RGBA', (size, size), (8, 8, 8, 255))
+              d = ImageDraw.Draw(im)
+              pad = int(size * 0.12)
+              d.rounded_rectangle((pad, pad, size-pad, size-pad), radius=int(size*0.20), fill=(18,18,18,255))
+              # Music-note symbol with offset cyan/red shadows and white foreground.
+              def note(dx, dy, color, width):
+                  x = int(size*.48)+dx; y = int(size*.23)+dy
+                  w = max(2, int(size*.105)); h = int(size*.43)
+                  d.rounded_rectangle((x, y, x+w, y+h), radius=max(1,width//2), fill=color)
+                  d.rounded_rectangle((x, y, x+int(size*.34), y+int(size*.09)), radius=max(1,width//2), fill=color)
+                  d.ellipse((x-int(size*.16), y+h-int(size*.07), x+int(size*.06), y+h+int(size*.15)), fill=color)
+              note(-int(size*.045), int(size*.015), (37,244,238,255), max(2,int(size*.05)))
+              note(int(size*.045), -int(size*.015), (254,44,85,255), max(2,int(size*.05)))
+              note(0, 0, (255,255,255,255), max(2,int(size*.05)))
+              im.save(f'app/src/main/res/mipmap-{density}/tiktok_launcher.png')
+          PY
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
