@@ -1,7 +1,7 @@
-name: Build YouTube for BlackBerry APK
+name: Build TikTok Lite for BlackBerry APK
 on:
   push:
-    branches: [ main ]
+    branches: [ tiktok-lite ]
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,7 +30,7 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: YouTube-for-BlackBerry-debug
+          name: TikTok-Lite-for-BlackBerry-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
