@@ -3,6 +3,7 @@ package com.dickytuj.youtube.blackberry;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -10,15 +11,17 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    private static final String HOME_URL = "https://www.tiktok.com/foryou?lang=id-ID";
+    private static final String VIDEO_URL = "https://vm.tiktok.com/ZS9fxNgUEFt8R-Sq2mT/";
     private WebView webView;
     private ProgressBar progress;
+    private TextView status;
     private FrameLayout root;
     private View customView;
     private WebChromeClient.CustomViewCallback customViewCallback;
@@ -35,7 +38,7 @@ public class MainActivity extends Activity {
         if (state != null) {
             webView.restoreState(state);
         } else {
-            webView.loadUrl(HOME_URL);
+            loadVideo();
         }
     }
 
@@ -47,21 +50,41 @@ public class MainActivity extends Activity {
         page.setOrientation(LinearLayout.VERTICAL);
         page.setBackgroundColor(Color.BLACK);
 
-        TextView header = new TextView(this);
-        header.setText("TikTok Lite");
-        header.setTextColor(Color.WHITE);
-        header.setTextSize(17);
-        header.setGravity(17);
-        header.setBackgroundColor(Color.rgb(12, 12, 12));
-        header.setPadding(8, 5, 8, 5);
-        page.addView(header, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dp(38)));
+        LinearLayout toolbar = new LinearLayout(this);
+        toolbar.setOrientation(LinearLayout.HORIZONTAL);
+        toolbar.setGravity(Gravity.CENTER_VERTICAL);
+        toolbar.setPadding(dp(8), dp(3), dp(8), dp(3));
+        toolbar.setBackgroundColor(Color.rgb(12, 12, 12));
+
+        TextView title = new TextView(this);
+        title.setText("TikTok Lite");
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(16);
+        title.setGravity(Gravity.CENTER_VERTICAL);
+        toolbar.addView(title, new LinearLayout.LayoutParams(0, dp(42), 1));
+
+        Button reload = new Button(this);
+        reload.setText("Muat ulang");
+        reload.setTextSize(11);
+        reload.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { loadVideo(); }
+        });
+        toolbar.addView(reload, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, dp(42)));
+        page.addView(toolbar);
 
         progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         progress.setMax(100);
-        progress.setProgress(0);
         page.addView(progress, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, dp(3)));
+
+        status = new TextView(this);
+        status.setText("Memuat video TikTok...");
+        status.setTextColor(Color.LTGRAY);
+        status.setTextSize(11);
+        status.setPadding(dp(8), dp(3), dp(8), dp(3));
+        status.setBackgroundColor(Color.rgb(20, 20, 20));
+        page.addView(status);
 
         webView = new WebView(this);
         webView.setBackgroundColor(Color.BLACK);
@@ -89,13 +112,42 @@ public class MainActivity extends Activity {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setBlockNetworkImage(false);
+        settings.setUserAgentString("Mozilla/5.0 (Linux; Android 4.3; Q10 Build/JLS36C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.91 Mobile Safari/537.36");
 
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                status.setText("Membuka video...");
+                progress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                status.setText("Halaman selesai dimuat. Jika video tidak tampil, situs mungkin tidak mendukung browser lama.");
+                progress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                status.setText("Gagal memuat: " + description);
+                progress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url != null && (url.startsWith("https://") || url.startsWith("http://"))) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 progress.setProgress(newProgress);
-                progress.setVisibility(newProgress >= 100 ? View.GONE : View.VISIBLE);
+                if (newProgress < 100) progress.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -124,6 +176,12 @@ public class MainActivity extends Activity {
                 }
             }
         });
+    }
+
+    private void loadVideo() {
+        status.setText("Mencoba membuka video TikTok...");
+        progress.setVisibility(View.VISIBLE);
+        webView.loadUrl(VIDEO_URL);
     }
 
     private int dp(int value) {
