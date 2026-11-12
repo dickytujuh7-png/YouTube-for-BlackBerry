@@ -9,7 +9,7 @@
         android:theme="@android:style/Theme.Black.NoTitleBar"
         android:hardwareAccelerated="true">
         <activity
-            android:name=".MainActivity"
+            android:name="com.dickytuj.youtube.blackberry.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:exported="true">
