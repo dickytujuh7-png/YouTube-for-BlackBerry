@@ -6,7 +6,7 @@ android {
     namespace 'com.dickytujuh.youtube.blackberry'
     compileSdk 33
     defaultConfig {
-        applicationId 'com.dickytuj.youtube.blackberry'
+        applicationId 'com.dickytuj.tiktok.blackberry'
         minSdk 18
         targetSdk 28
         versionCode 1
