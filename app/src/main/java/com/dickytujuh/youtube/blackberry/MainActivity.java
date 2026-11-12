@@ -133,9 +133,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         if (customView != null) {
-            if (webView.getWebChromeClient() != null) {
-                webView.setVisibility(View.VISIBLE);
-            }
+            webView.setVisibility(View.VISIBLE);
             root.removeView(customView);
             customView = null;
             if (customViewCallback != null) {
