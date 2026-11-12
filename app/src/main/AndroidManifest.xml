@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="false"
-        android:icon="@drawable/tiktok_launcher"
+        android:icon="@mipmap/tiktok_launcher"
         android:label="TikTok Lite for BlackBerry"
         android:theme="@android:style/Theme.Black.NoTitleBar"
         android:hardwareAccelerated="true">
