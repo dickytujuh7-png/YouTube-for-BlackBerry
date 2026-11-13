@@ -34,6 +34,8 @@ node -e "const fs=require('fs'); const p=require('./package.json'); delete p.dep
 rm -f package-lock.json
 
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+# Use the system Chromium; avoid Playwright's bundled-browser cache lookup on Android.
+export PLAYWRIGHT_BROWSERS_PATH=0
 npm install --omit=optional --no-audit --no-fund
 
 # Add Android-specific headless Chromium flags once.
@@ -79,6 +81,7 @@ cat > "$HOME/start-feather-server.sh" <<'START'
 #!/data/data/com.termux/files/usr/bin/bash
 set -Eeuo pipefail
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+export PLAYWRIGHT_BROWSERS_PATH=0
 export BROWSER_PATH="$(command -v chromium-browser || command -v chromium)"
 export HOST=0.0.0.0
 cd "$HOME/feather-android/server"
