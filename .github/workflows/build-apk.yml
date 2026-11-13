@@ -1,7 +1,7 @@
-name: Build BlackBerryFox APK
+name: Build TikTok Lite Gecko APK
 on:
   push:
-    branches: [ tiktok-lite ]
+    branches: [ tiktok-gecko ]
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,7 +26,7 @@ jobs:
           fi
           yes | "$SDKMANAGER" --licenses
           "$SDKMANAGER" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-      - name: Create BlackBerryFox launcher icons
+      - name: Create TikTok Lite Gecko launcher icons
         run: |
           python3 -m pip install --quiet Pillow
           python3 - <<'PY'
@@ -47,13 +47,13 @@ jobs:
               d.ellipse((int(size*.37),int(size*.43),int(size*.43),int(size*.49)), fill=(255,255,255,255))
               d.ellipse((int(size*.57),int(size*.43),int(size*.63),int(size*.49)), fill=(255,255,255,255))
               d.ellipse((int(size*.46),int(size*.57),int(size*.54),int(size*.64)), fill=(30,130,240,255))
-              im.save(f'app/src/main/res/mipmap-{density}/blackberryfox.png')
+              im.save(f'app/src/main/res/mipmap-{density}/tiktoklite.png')
           PY
       - name: Build ARMv7 debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: BlackBerryFox-ARMv7-debug
+          name: TikTok Lite Gecko-ARMv7-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
