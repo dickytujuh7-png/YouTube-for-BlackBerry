@@ -57,6 +57,24 @@ if (s.includes(backAnchor) && !s.includes("action === 'back'")) s = s.replace(ba
 fs.writeFileSync(p, s);
 NODE
 
+echo "Memeriksa apakah Playwright dapat menjalankan Chromium..."
+BROWSER_PATH="$CHROME_BIN" node <<'NODE'
+const { chromium } = require('./node_modules/playwright');
+(async () => {
+  const browser = await chromium.launch({
+    headless: true,
+    executablePath: process.env.BROWSER_PATH,
+    args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+  });
+  console.log('Chromium berhasil dijalankan:', await browser.version());
+  await browser.close();
+})().catch((err) => {
+  console.error('Chromium/Playwright belum kompatibel di perangkat ini:');
+  console.error(err && err.stack || err);
+  process.exit(1);
+});
+NODE
+
 cat > "$HOME/start-feather-server.sh" <<'START'
 #!/data/data/com.termux/files/usr/bin/bash
 set -Eeuo pipefail
