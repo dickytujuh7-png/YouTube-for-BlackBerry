@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -Eeuo pipefail
 
-if [[ -z "\${PREFIX:-}" || ! -d "$PREFIX" ]]; then
+if [[ ! -d /data/data/com.termux/files/usr ]]; then
   echo "Jalankan skrip ini dari aplikasi Termux di Android."
   exit 1
 fi
