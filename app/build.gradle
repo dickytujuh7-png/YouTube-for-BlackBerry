@@ -3,31 +3,25 @@ plugins {
 }
 
 android {
-    namespace 'com.dickytuj.blackberryfox'
+    namespace 'com.dickytuj.tiktokgecko'
     compileSdk 33
-
     defaultConfig {
-        applicationId 'com.dickytuj.blackberryfox'
+        applicationId 'com.dickytuj.tiktokgecko'
         minSdk 18
         targetSdk 28
         versionCode 1
         versionName '1.0'
-        ndk {
-            abiFilters 'armeabi-v7a'
-        }
+        ndk { abiFilters 'armeabi-v7a' }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     buildTypes {
         debug { minifyEnabled false }
         release { minifyEnabled false }
     }
 }
-
 dependencies {
     implementation 'org.mozilla.geckoview:geckoview-beta-armeabi-v7a:68.0.20190611143747'
 }
