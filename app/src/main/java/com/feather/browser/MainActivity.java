@@ -61,10 +61,11 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle b) {
         super.onCreate(b);
         getWindow().setFlags(1024, 1024);
+        // Keep fullscreen, but do not draw page content underneath a system/runtime
+        // navigation area if the BlackBerry Android Runtime keeps one visible.
         getWindow().getDecorView().setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
         client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
 
@@ -257,14 +258,13 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) {}
     }
 
-    float scale() { return Math.min(page.getWidth() / 720f, page.getHeight() / 720f); }
+    // The image is rendered with FIT_XY, so map touches independently on each axis.
+    // This also keeps taps aligned when the bottom system bar reduces the usable height.
     float x(float v) {
-        float z = scale();
-        return Math.max(0, Math.min(720, (v - (page.getWidth() - 720 * z) / 2) / z));
+        return page.getWidth() <= 0 ? 0 : Math.max(0, Math.min(720, v * 720f / page.getWidth()));
     }
     float y(float v) {
-        float z = scale();
-        return Math.max(0, Math.min(720, (v - (page.getHeight() - 720 * z) / 2) / z));
+        return page.getHeight() <= 0 ? 0 : Math.max(0, Math.min(720, v * 720f / page.getHeight()));
     }
 
     boolean touch(MotionEvent e) {
