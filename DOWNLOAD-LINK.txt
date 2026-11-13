@@ -1,0 +1,6 @@
+BlackBerry Momentics 2.1.2 installer (Windows x64)
+
+Original download:
+https://archive.org/download/bbdevtools/momentics-2.1.2-201503050937.win32.x86_64.setup_2.exe
+
+This repository contains the download link only; the installer binary is hosted by Internet Archive.
