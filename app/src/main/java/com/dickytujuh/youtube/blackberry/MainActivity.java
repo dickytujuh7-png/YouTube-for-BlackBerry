@@ -10,7 +10,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
 import org.mozilla.geckoview.GeckoRuntime;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoView;
@@ -20,10 +20,13 @@ public class MainActivity extends Activity {
     private GeckoSession session;
     private EditText address;
 
-    @Override public void onCreate(Bundle state) {
+    @Override
+    public void onCreate(Bundle state) {
         super.onCreate(state);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         runtime = GeckoRuntime.create(this);
         session = new GeckoSession();
         session.open(runtime);
@@ -32,59 +35,61 @@ public class MainActivity extends Activity {
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(Color.BLACK);
 
+        // One compact address bar: no tabs, bookmarks, downloads or extra menus.
         LinearLayout top = new LinearLayout(this);
         top.setGravity(Gravity.CENTER_VERTICAL);
-        top.setPadding(dp(6), dp(5), dp(6), dp(5));
-        top.setBackgroundColor(Color.rgb(16,16,18));
-        TextView brand = new TextView(this);
-        brand.setText("BlackBerryFox");
-        brand.setTextColor(Color.WHITE);
-        brand.setTextSize(15);
-        top.addView(brand, new LinearLayout.LayoutParams(-2, dp(40)));
+        top.setPadding(dp(5), dp(4), dp(5), dp(4));
+        top.setBackgroundColor(Color.rgb(15, 15, 17));
 
         address = new EditText(this);
         address.setSingleLine(true);
-        address.setTextSize(13);
+        address.setTextSize(14);
         address.setHint("Cari atau masukkan alamat");
-        address.setHintTextColor(Color.GRAY);
+        address.setHintTextColor(Color.LTGRAY);
         address.setTextColor(Color.WHITE);
         address.setImeOptions(EditorInfo.IME_ACTION_GO);
-        address.setPadding(dp(8), 0, dp(8), 0);
-        address.setBackgroundColor(Color.rgb(42,42,46));
-        LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(0, dp(40), 1);
-        ap.setMargins(dp(7), 0, dp(5), 0);
-        top.addView(address, ap);
+        address.setPadding(dp(9), 0, dp(9), 0);
+        address.setBackgroundColor(Color.rgb(42, 42, 46));
+        top.addView(address, new LinearLayout.LayoutParams(0, dp(42), 1));
+
         Button go = button("Buka");
-        top.addView(go, new LinearLayout.LayoutParams(dp(54), dp(40)));
+        LinearLayout.LayoutParams goParams = new LinearLayout.LayoutParams(dp(58), dp(42));
+        goParams.setMargins(dp(5), 0, 0, 0);
+        top.addView(go, goParams);
         root.addView(top);
 
-        GeckoView view = new GeckoView(this);
-        view.setSession(session);
-        root.addView(view, new LinearLayout.LayoutParams(-1, 0, 1));
+        GeckoView browser = new GeckoView(this);
+        browser.setSession(session);
+        root.addView(browser, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
 
+        // Only the two essential navigation controls remain.
         LinearLayout bottom = new LinearLayout(this);
         bottom.setGravity(Gravity.CENTER);
-        bottom.setPadding(dp(4), dp(3), dp(4), dp(3));
-        bottom.setBackgroundColor(Color.rgb(16,16,18));
-        Button back = button("‹");
-        Button forward = button("›");
+        bottom.setPadding(dp(5), dp(3), dp(5), dp(3));
+        bottom.setBackgroundColor(Color.rgb(15, 15, 17));
+
+        Button back = button("Kembali");
         Button home = button("Beranda");
-        Button reload = button("Muat ulang");
-        bottom.addView(back, new LinearLayout.LayoutParams(0, dp(42), 1));
-        bottom.addView(forward, new LinearLayout.LayoutParams(0, dp(42), 1));
-        bottom.addView(home, new LinearLayout.LayoutParams(0, dp(42), 1.4f));
-        bottom.addView(reload, new LinearLayout.LayoutParams(0, dp(42), 1.4f));
+        bottom.addView(back, new LinearLayout.LayoutParams(0, dp(40), 1));
+        LinearLayout.LayoutParams homeParams = new LinearLayout.LayoutParams(0, dp(40), 1);
+        homeParams.setMargins(dp(5), 0, 0, 0);
+        bottom.addView(home, homeParams);
         root.addView(bottom);
 
         go.setOnClickListener(v -> loadAddress());
         address.setOnEditorActionListener((v, action, event) -> {
-            if (action == EditorInfo.IME_ACTION_GO) { loadAddress(); return true; }
+            if (action == EditorInfo.IME_ACTION_GO) {
+                loadAddress();
+                return true;
+            }
             return false;
         });
-        back.setOnClickListener(v -> session.goBack());
-        forward.setOnClickListener(v -> session.goForward());
+        back.setOnClickListener(v -> {
+            if (session != null) session.goBack();
+        });
         home.setOnClickListener(v -> loadHome());
-        reload.setOnClickListener(v -> session.reload());
+
         setContentView(root);
         if (state == null) loadHome();
     }
@@ -96,38 +101,52 @@ public class MainActivity extends Activity {
         b.setTextColor(Color.WHITE);
         b.setAllCaps(false);
         b.setPadding(dp(2), 0, dp(2), 0);
-        b.setBackgroundColor(Color.rgb(38,38,42));
+        b.setBackgroundColor(Color.rgb(38, 38, 42));
         return b;
     }
 
     private void loadHome() {
-        address.setText("https://www.google.com/");
-        session.loadUri("https://www.google.com/");
+        String home = "https://www.google.com/";
+        address.setText(home);
+        session.loadUri(home);
     }
 
     private void loadAddress() {
         String value = address.getText().toString().trim();
-        if (value.length() == 0) return;
+        if (value.isEmpty()) return;
+
         if (!value.contains("://")) {
             if (value.contains(" ") || !value.contains(".")) {
-                value = "https://www.google.com/search?q=" + value.replace(" ", "+");
-            } else value = "https://" + value;
+                try {
+                    value = "https://www.google.com/search?q=" +
+                            java.net.URLEncoder.encode(value, "UTF-8");
+                } catch (java.io.UnsupportedEncodingException ignored) {
+                    value = "https://www.google.com/";
+                }
+            } else {
+                value = "https://" + value;
+            }
         }
         address.setText(value);
         session.loadUri(value);
     }
 
     private int dp(int value) {
-        return (int)(value * getResources().getDisplayMetrics().density + 0.5f);
+        return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
     }
 
-    @Override public void onBackPressed() {
+    @Override
+    public void onBackPressed() {
         if (session != null) session.goBack();
         else super.onBackPressed();
     }
 
-    @Override protected void onDestroy() {
-        if (session != null) { session.close(); session = null; }
+    @Override
+    protected void onDestroy() {
+        if (session != null) {
+            session.close();
+            session = null;
+        }
         super.onDestroy();
     }
 }
