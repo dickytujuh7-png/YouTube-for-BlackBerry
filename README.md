@@ -1,11 +1,15 @@
-# YouTube for BlackBerry
+# BlackBerryFox
 
-Experimental Android WebView wrapper for BlackBerry 10 Android Runtime.
+A minimal GeckoView browser shell intended for BlackBerry 10 Android Runtime devices.
 
-- Minimum Android API: 18 (Android 4.3)
-- Target SDK: 28
-- Uses the device's built-in Android System WebView to open YouTube mobile.
+- Name: BlackBerryFox
+- Browser engine: GeckoView 68 Beta, ARMv7
+- Minimum Android API: 18
+- Target: BlackBerry Q10, 720 × 720 display
+- Interface: compact address bar, back, forward, home, reload
 
-GitHub Actions builds a debug APK on push to main or manual workflow dispatch. The APK is uploaded as `YouTube-for-BlackBerry-debug`.
+Pushes to the `tiktok-lite` branch start the GitHub Actions build. A successful build uploads
+`BlackBerryFox-ARMv7-debug` as a workflow artifact.
 
-Important: a successful build does not guarantee current YouTube playback or sign-in on BlackBerry Q10. This depends on the device's old WebView, TLS and YouTube compatibility.
+This is an initial build candidate. Installation and runtime compatibility still need testing
+on a physical BlackBerry Q10; GeckoView 68 may not behave identically to the original Firefox APK.
