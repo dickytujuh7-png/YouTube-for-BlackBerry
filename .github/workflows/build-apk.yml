@@ -1,4 +1,4 @@
-name: Build TikTok Lite for BlackBerry APK
+name: Build BlackBerryFox APK
 on:
   push:
     branches: [ tiktok-lite ]
@@ -26,36 +26,33 @@ jobs:
           fi
           yes | "$SDKMANAGER" --licenses
           "$SDKMANAGER" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-      - name: Generate legacy-compatible PNG launcher icons
+      - name: Create BlackBerryFox launcher icons
         run: |
           python3 -m pip install --quiet Pillow
-          mkdir -p app/src/main/res/mipmap-mdpi app/src/main/res/mipmap-hdpi app/src/main/res/mipmap-xhdpi app/src/main/res/mipmap-xxhdpi app/src/main/res/mipmap-xxxhdpi
           python3 - <<'PY'
           from PIL import Image, ImageDraw
           import os
           sizes = {'mdpi':48, 'hdpi':72, 'xhdpi':96, 'xxhdpi':144, 'xxxhdpi':192}
           for density, size in sizes.items():
-              im = Image.new('RGBA', (size, size), (8, 8, 8, 255))
+              im = Image.new('RGBA', (size,size), (8,8,10,255))
               d = ImageDraw.Draw(im)
-              pad = int(size * 0.12)
-              d.rounded_rectangle((pad, pad, size-pad, size-pad), radius=int(size*0.20), fill=(18,18,18,255))
-              # Music-note symbol with offset cyan/red shadows and white foreground.
-              def note(dx, dy, color, width):
-                  x = int(size*.48)+dx; y = int(size*.23)+dy
-                  w = max(2, int(size*.105)); h = int(size*.43)
-                  d.rounded_rectangle((x, y, x+w, y+h), radius=max(1,width//2), fill=color)
-                  d.rounded_rectangle((x, y, x+int(size*.34), y+int(size*.09)), radius=max(1,width//2), fill=color)
-                  d.ellipse((x-int(size*.16), y+h-int(size*.07), x+int(size*.06), y+h+int(size*.15)), fill=color)
-              note(-int(size*.045), int(size*.015), (37,244,238,255), max(2,int(size*.05)))
-              note(int(size*.045), -int(size*.015), (254,44,85,255), max(2,int(size*.05)))
-              note(0, 0, (255,255,255,255), max(2,int(size*.05)))
-              im.save(f'app/src/main/res/mipmap-{density}/tiktok_launcher.png')
+              pad = int(size*.08)
+              d.rounded_rectangle((pad,pad,size-pad,size-pad), radius=int(size*.20), fill=(18,18,22,255))
+              # Stylized black fox head, white eyes, and blue globe accent.
+              d.ellipse((int(size*.24),int(size*.25),int(size*.77),int(size*.78)), fill=(0,0,0,255))
+              d.polygon([(int(size*.27),int(size*.42)),(int(size*.23),int(size*.12)),(int(size*.48),int(size*.30))], fill=(0,0,0,255))
+              d.polygon([(int(size*.53),int(size*.30)),(int(size*.79),int(size*.12)),(int(size*.73),int(size*.46))], fill=(0,0,0,255))
+              d.polygon([(int(size*.34),int(size*.50)),(int(size*.66),int(size*.50)),(int(size*.50),int(size*.73))], fill=(235,235,240,255))
+              d.ellipse((int(size*.37),int(size*.43),int(size*.43),int(size*.49)), fill=(255,255,255,255))
+              d.ellipse((int(size*.57),int(size*.43),int(size*.63),int(size*.49)), fill=(255,255,255,255))
+              d.ellipse((int(size*.46),int(size*.57),int(size*.54),int(size*.64)), fill=(30,130,240,255))
+              im.save(f'app/src/main/res/mipmap-{density}/blackberryfox.png')
           PY
-      - name: Build debug APK
+      - name: Build ARMv7 debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: TikTok-Lite-for-BlackBerry-debug
+          name: BlackBerryFox-ARMv7-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
