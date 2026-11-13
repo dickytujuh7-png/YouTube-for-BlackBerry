@@ -10,7 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://maven.mozilla.org/maven2/' }
     }
 }
-rootProject.name = "TikTokLiteForBlackBerry"
+rootProject.name = "BlackBerryFox"
 include ':app'
