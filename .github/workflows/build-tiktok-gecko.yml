@@ -1,0 +1,51 @@
+name: Build TikTok Lite Gecko APK
+on:
+  push:
+    branches: [ tiktok-gecko ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tiktok-gecko
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '7.5.1'
+      - name: Install Android SDK packages
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          yes | "$SDKMANAGER" --licenses
+          "$SDKMANAGER" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+      - name: Create TikTok launcher icon
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw
+          import os
+          sizes = {'mdpi':48, 'hdpi':72, 'xhdpi':96, 'xxhdpi':144, 'xxxhdpi':192}
+          for density, size in sizes.items():
+              os.makedirs(f'app/src/main/res/mipmap-{density}', exist_ok=True)
+              im = Image.new('RGBA', (size,size), (8,8,10,255))
+              d = ImageDraw.Draw(im)
+              d.rounded_rectangle((int(size*.08),int(size*.08),int(size*.92),int(size*.92)), radius=int(size*.2), fill=(18,18,22,255))
+              d.rounded_rectangle((int(size*.43),int(size*.16),int(size*.60),int(size*.68)), radius=int(size*.07), fill=(255,255,255,255))
+              d.ellipse((int(size*.24),int(size*.58),int(size*.54),int(size*.86)), fill=(255,45,105,255))
+              d.ellipse((int(size*.30),int(size*.54),int(size*.60),int(size*.82)), fill=(0,210,220,255))
+              im.save(f'app/src/main/res/mipmap-{density}/tiktoklite.png')
+          PY
+      - name: Build ARMv7 APK
+        run: gradle --no-daemon :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TikTok-Lite-Gecko-Q10-ARMv7
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
