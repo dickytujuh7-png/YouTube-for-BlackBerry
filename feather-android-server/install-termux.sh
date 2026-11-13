@@ -49,7 +49,10 @@ if (s.includes(anchor)) {
   throw new Error('Tidak dapat menemukan konfigurasi Chromium; hentikan agar file tidak rusak.');
 }
 const backAnchor = "  } else if (action === 'refresh') {";
-const backCode = "  } else if (action === 'back') {\\n    await page.goBack({ waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});\\n    await settle(page, 1000);\\n  } else if (action === 'refresh') {";
+const backCode = `  } else if (action === 'back') {
+    await page.goBack({ waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
+    await settle(page, 1000);
+  } else if (action === 'refresh') {`;
 if (s.includes(backAnchor) && !s.includes("action === 'back'")) s = s.replace(backAnchor, backCode);
 fs.writeFileSync(p, s);
 NODE
