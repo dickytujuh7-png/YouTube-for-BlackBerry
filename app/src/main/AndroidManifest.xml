@@ -4,12 +4,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="false"
-        android:icon="@mipmap/blackberryfox"
-        android:label="BlackBerryFox"
+        android:icon="@mipmap/tiktoklite"
+        android:label="TikTok Lite Q10"
         android:theme="@android:style/Theme.Black.NoTitleBar"
         android:hardwareAccelerated="true">
         <activity
-            android:name="com.dickytuj.blackberryfox.MainActivity"
+            android:name="com.dickytuj.tiktokgecko.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:exported="true">
