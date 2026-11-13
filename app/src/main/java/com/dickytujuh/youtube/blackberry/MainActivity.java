@@ -38,22 +38,22 @@ public class MainActivity extends Activity {
         // One compact address bar: no tabs, bookmarks, downloads or extra menus.
         LinearLayout top = new LinearLayout(this);
         top.setGravity(Gravity.CENTER_VERTICAL);
-        top.setPadding(dp(5), dp(4), dp(5), dp(4));
+        top.setPadding(dp(5), dp(3), dp(5), dp(3));
         top.setBackgroundColor(Color.rgb(15, 15, 17));
 
         address = new EditText(this);
         address.setSingleLine(true);
-        address.setTextSize(14);
+        address.setTextSize(12);
         address.setHint("Cari atau masukkan alamat");
         address.setHintTextColor(Color.LTGRAY);
         address.setTextColor(Color.WHITE);
         address.setImeOptions(EditorInfo.IME_ACTION_GO);
-        address.setPadding(dp(9), 0, dp(9), 0);
+        address.setPadding(dp(7), 0, dp(7), 0);
         address.setBackgroundColor(Color.rgb(42, 42, 46));
-        top.addView(address, new LinearLayout.LayoutParams(0, dp(42), 1));
+        top.addView(address, new LinearLayout.LayoutParams(0, dp(34), 1));
 
         Button go = button("Buka");
-        LinearLayout.LayoutParams goParams = new LinearLayout.LayoutParams(dp(58), dp(42));
+        LinearLayout.LayoutParams goParams = new LinearLayout.LayoutParams(dp(48), dp(34));
         goParams.setMargins(dp(5), 0, 0, 0);
         top.addView(go, goParams);
         root.addView(top);
@@ -63,20 +63,6 @@ public class MainActivity extends Activity {
         root.addView(browser, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
 
-        // Only the two essential navigation controls remain.
-        LinearLayout bottom = new LinearLayout(this);
-        bottom.setGravity(Gravity.CENTER);
-        bottom.setPadding(dp(5), dp(3), dp(5), dp(3));
-        bottom.setBackgroundColor(Color.rgb(15, 15, 17));
-
-        Button back = button("Kembali");
-        Button home = button("Beranda");
-        bottom.addView(back, new LinearLayout.LayoutParams(0, dp(40), 1));
-        LinearLayout.LayoutParams homeParams = new LinearLayout.LayoutParams(0, dp(40), 1);
-        homeParams.setMargins(dp(5), 0, 0, 0);
-        bottom.addView(home, homeParams);
-        root.addView(bottom);
-
         go.setOnClickListener(v -> loadAddress());
         address.setOnEditorActionListener((v, action, event) -> {
             if (action == EditorInfo.IME_ACTION_GO) {
@@ -85,10 +71,6 @@ public class MainActivity extends Activity {
             }
             return false;
         });
-        back.setOnClickListener(v -> {
-            if (session != null) session.goBack();
-        });
-        home.setOnClickListener(v -> loadHome());
 
         setContentView(root);
         if (state == null) loadHome();
