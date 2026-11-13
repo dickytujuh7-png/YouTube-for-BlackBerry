@@ -16,6 +16,7 @@ import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoView;
 
 public class MainActivity extends Activity {
+    // TikTok Lite Q10: GeckoView 68, ARMv7 / Android API 18.
     private GeckoRuntime runtime;
     private GeckoSession session;
     private EditText address;
