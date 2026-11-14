@@ -1,42 +1,46 @@
 # Q10 Chromium Browser
 
-A dedicated subproject for a custom Chromium-based browser targeting BlackBerry Q10 / BlackBerry 10 OS 10.3.
+Project space for a modern Chromium browser targeting BlackBerry Q10 / BlackBerry 10 OS 10.3.
 
-> This project is currently in the architecture and compatibility-audit stage. No Chromium engine binary is bundled here yet.
+## Engineering decision
+
+Use the existing **Berry Browser V3 / chromium-for-bb10** port as the engine and browser implementation baseline. Do not start a Chromium build from scratch in Momentics: the upstream port already contains the QNX ARM32 engine, windowed rendering, browser UI, and BB10 packaging work.
+
+- Upstream browser and releases: https://sw7ft.github.io/berry-browser/
+- Upstream engine source: https://github.com/sw7ft/chromium-for-bb10
+- Active upstream source branch: `berry-v3`
+
+The upstream project advertises Chromium 120.0.6099.234, BB10 10.3.x, and automatic panel support including Q10/Q5 (720×720). The upstream release hub currently advertises version 3.0.2 build 106. This is upstream software, not a custom build produced by this repository.
 
 ## Target
 
 - Device: BlackBerry Q10
 - OS: BlackBerry 10.3.x
-- CPU: ARMv7
+- CPU: ARMv7 / QNX
 - Package: BAR
-- Native UI: Cascades / C++
-- Browser engine: Chromium port compatible with BlackBerry 10 (candidate: chromium-for-bb10 / Berry Browser V3)
+- Screen: 720×720
 
-## Important architecture decision
+## Project status
 
-Do not attempt to embed desktop Chromium or compile an arbitrary modern Chromium release with the Momentics Windows IDE. The engine port must match the BlackBerry 10 QNX ABI, graphics stack, and available system libraries.
+**Upstream audit completed; custom rebrand/build not completed.**
 
-The native Cascades shell and the Chromium engine are separate deliverables. Integration is only valid after the exact engine interface, binary architecture, runtime dependencies, and redistribution license have been verified.
+A working custom BAR cannot be claimed until the upstream source is cloned, its build dependencies are available, the desired changes are implemented, and the result is built and tested on a physical Q10.
 
-## Milestones
+## Why this route
 
-1. Audit the upstream Chromium-for-BB10 source, release artifacts, license, and build instructions.
-2. Verify the engine's QNX ABI, ARMv7 compatibility, graphics integration, and runtime dependencies.
-3. Build a minimal engine proof-of-concept on a Q10-compatible environment.
-4. Implement the Cascades browser shell: address/search bar, navigation controls, tabs, bookmarks, history, and downloads.
-5. Integrate the engine through its supported interface.
-6. Package, install, and test a signed/debug BAR on a physical Q10.
+The upstream Chromium port documents a Linux build host, QNX SDP 8.0-compatible ARM toolchain, Clang 17, LLD 17, and device-side testing. Momentics 2.1.2 on Windows is useful for legacy Cascades work, but it is not by itself the documented environment for building this Chromium port.
 
-## Repository layout
+See [UPSTREAM-AUDIT.md](UPSTREAM-AUDIT.md) for the verified findings and remaining work.
 
-- `chromium-browser/README.md` — project scope, architecture, and milestones.
-- Future source directories will be added only after the upstream engine interface and build environment are verified.
+## Scope for a custom derivative
 
-## Current status
+1. Pin an upstream `berry-v3` source revision and record its license/notices.
+2. Confirm Q10 install requirements and test the unmodified upstream BAR first.
+3. Decide the custom app identity, icon, name, and browser defaults.
+4. Change the upstream app only where its source and license permit.
+5. Build/sign the BAR using the documented QNX toolchain.
+6. Test launch, touch mapping, keyboard, HTTPS, tabs, downloads, video, memory use, and exit/restart on Q10.
 
-Planning / upstream compatibility audit. A working BAR has not yet been produced.
+## Important
 
-## License
-
-The browser shell's license will be selected before source code is added. Chromium and any upstream port retain their respective third-party licenses and notices.
+Do not rename or redistribute an upstream BAR as if it were our own build. Keep upstream attribution and third-party notices. Do not claim compatibility or successful installation until tested on the actual device.
